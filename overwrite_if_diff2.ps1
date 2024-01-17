@@ -15,11 +15,13 @@ $dictionary1 = [Ordered]@{}
 function Get-LastWriteTime($path, $dictionary) {
   Get-ChildItem $path -Recurse | ForEach-Object {
     if ($_.PSIsContainer) {  # If it's a directory...
-      #Write-Output $_.FullName
+      # DEBUG
+      Write-Output $_.FullName
       if ($($_.FullName[3]) -ne ".") { # ...and if the name of the directory does not begin with a "." ...
-        # DEBUGGING
+        # DEBUG
         Write-Output $_.FullName
-        Get-LastWriteTime $_.FullName  # ...recursively call the function on the subdirectory;
+        
+        Get-LastWriteTime $_.FullName # ...recursively call the function on the subdirectory;
       } else { # Else, if it's NOT a directory...
         if ($($_.FullName[]))
       # The key will be the full filepath of the file;
@@ -39,13 +41,15 @@ function Get-LastWriteTime($path, $dictionary) {
         #$dictionary.Add($_.FullName, $hash)
         
         # This might be simpler, but it will replace the key if it already exists;
-        $dictionary[$_.FullName] = "x"
+        $dictionary[$_.FullName] = $LastWriteTime
 
       }
     } 
   }
   # Returning the variable will allow us to use it outside of this function
   return $dictionary
+}
+
 
 <# COMMENTED OUT BECAUSE I WILL BE USING LASTWRITETIME INSTEAD OF FILEHASHES;
 function Get-Checksums($path, $dictionary) {
@@ -88,7 +92,7 @@ function Get-Checksums($path, $dictionary) {
 # checksum values for the first drive;
 #$dictionary1 = [Ordered]@{}
 
-# Call the function that calculates the checksums, enter the letter of your first drive; 
+# Call the function that retrieves the last write time, enter the letter of your first drive; 
 Get-LastWriteTime "E:\" ([ref]$dictionary1)
 
 # Using GetEnumerator();
