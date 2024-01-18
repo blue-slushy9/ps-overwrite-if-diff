@@ -28,8 +28,10 @@ function Get-Timestamps($path, $dictionary) {
         
         Get-Timestamps $_.FullName # ...recursively call the function on the subdirectory;
       } else { 
+        write-output $_.FullName
         # Else, if it's NOT a directory...
         if (!($_.PSIsContainer)) {
+          Write-Output "test2"
         #if ($($_.FullName[]))
       # The key will be the full filepath of the file;
       #$dictionary1.Add(key = $($_.FullName))
