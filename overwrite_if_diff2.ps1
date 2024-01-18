@@ -26,10 +26,17 @@ function Get-Timestamps($path, $dictionary) {
       #if ($($_.FullName[3]) -ne ".") { # ...and if the name of the directory does not begin with a "." ...
       
       # ...and if the name of the directory does not contain "\." ...
-      if (!($_.FullName -contains "\.")) {
+      #if (!($_.FullName -contains "\.")) {
+      
+      # ...and if the name of the directory does not contain "\." ...
+      #if (!($_.FullName -contains "\\") -and !($_.FullName -contains "\.")) {
+
+      # ...and if the name of the directory does not contain "\." ...
+      # (-match uses regex)
+      if (!($_.FullName -match '\\.')) {
 
         # DEBUG
-        Write-Output $_.FullName
+        #Write-Output $_.FullName
         
         Get-Timestamps $_.FullName # ...recursively call the function on the subdirectory;
       } else { 
