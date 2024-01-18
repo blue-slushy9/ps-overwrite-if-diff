@@ -19,7 +19,8 @@ function Get-LastWriteTime($file) {
 
 function Get-Timestamps($path, $dictionary) {
   Get-ChildItem $path -Recurse | ForEach-Object {
-    if ($_.PSIsContainer) {  # If it's a directory...
+    # If it's a directory...
+    if ($_.PSIsContainer) {  
       # DEBUG
       #Write-Output $_.FullName
       
@@ -32,36 +33,42 @@ function Get-Timestamps($path, $dictionary) {
       #if (!($_.FullName -contains "\\") -and !($_.FullName -contains "\.")) {
 
       # ...and if the name of the directory does not contain "\." ...
-      # (-match uses regex)
-      if (!($_.FullName -match '\\.')) {
+      # (-match uses regex, first '\' is escape character)
+      #if (!($_.FullName -match '\\.')) {
+
+      #if (!($_.FullName -match '*\\.*')) {
+
+      # ...and if the name of the directory does not contain "\." ...
+      # (for some reason, this returns the directories in E:\ that DO NOT contain a "\.");
+      if ($_.FullName -like '*\.*') {
 
         # DEBUG
         #Write-Output $_.FullName
         
-        Get-Timestamps $_.FullName # ...recursively call the function on the subdirectory;
-      } else { 
-        write-output $_.FullName
-        # Else, if it's NOT a directory...
-        #if (!($_.PSIsContainer)) {
-        Write-Output "test2"
-        #if ($($_.FullName[]))
-        # The key will be the full filepath of the file;
-        #$dictionary1.Add(key = $($_.FullName))
+        # ...recursively call the function on the subdirectory;
+        Get-Timestamps $_.FullName
+      }  
+    } else {
+      write-output $_.FullName
+      # Else, if it's NOT a directory...
+      #if (!($_.PSIsContainer)) {
+      Write-Output "test2"
+          #if ($($_.FullName[]))
+          # The key will be the full filepath of the file;
+          #$dictionary1.Add(key = $($_.FullName))
 
-        # DEBUG
-        Write-Output "Processing file: $($_.FullName)"
+      # DEBUG
+      Write-Output "Processing file: $($_.FullName)"
 
-        # Call the Get-LastWriteTime function and assign output to variable;
-        $LastWriteTime = Get-LastWriteTime($_.FullName)
+      # Call the Get-LastWriteTime function and assign output to variable;
+      $LastWriteTime = Get-LastWriteTime($_.FullName)
 
         # The key will be the filename, the value will be the MD5 checksum for the file;
         #$dictionary.Add($_.FullName, $hash)
         
-        # This might be simpler, but it will replace the key if it already exists;
-        $dictionary[$_.FullName] = $LastWriteTime
-      }
+      # This might be simpler, but it will replace the key if it already exists;
+      $dictionary[$_.FullName] = $LastWriteTime
     }
-    #} 
   }
   # Returning the variable will allow us to use it outside of this function;
   return $dictionary
@@ -109,6 +116,8 @@ function Get-Checksums($path, $dictionary) {
 # Create your first dictionary, for the source drive, that will store your 
 # checksum values for the first drive;
 #$dictionary1 = [Ordered]@{}
+
+# CREATE A LOOP TO CALL THE FUNCTION ON ALL SUBDIRECTORIES AND FILES?;
 
 # Call the function that retrieves the last write time, enter the letter of your first drive; 
 Get-Timestamps "E:\" ([ref]$dictionary1)
