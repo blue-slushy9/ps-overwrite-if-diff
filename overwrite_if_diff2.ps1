@@ -22,19 +22,24 @@ function Get-Timestamps($path, $dictionary) {
     if ($_.PSIsContainer) {  # If it's a directory...
       # DEBUG
       #Write-Output $_.FullName
-      if ($($_.FullName[3]) -ne ".") { # ...and if the name of the directory does not begin with a "." ...
+      
+      #if ($($_.FullName[3]) -ne ".") { # ...and if the name of the directory does not begin with a "." ...
+      
+      # ...and if the name of the directory does not contain "\." ...
+      if (!($_.FullName -contains "\.")) {
+
         # DEBUG
-        #Write-Output $_.FullName
+        Write-Output $_.FullName
         
         Get-Timestamps $_.FullName # ...recursively call the function on the subdirectory;
       } else { 
         write-output $_.FullName
         # Else, if it's NOT a directory...
-        if (!($_.PSIsContainer)) {
-          Write-Output "test2"
+        #if (!($_.PSIsContainer)) {
+        Write-Output "test2"
         #if ($($_.FullName[]))
-      # The key will be the full filepath of the file;
-      #$dictionary1.Add(key = $($_.FullName))
+        # The key will be the full filepath of the file;
+        #$dictionary1.Add(key = $($_.FullName))
 
         # DEBUG
         Write-Output "Processing file: $($_.FullName)"
@@ -42,16 +47,14 @@ function Get-Timestamps($path, $dictionary) {
         # Call the Get-LastWriteTime function and assign output to variable;
         $LastWriteTime = Get-LastWriteTime($_.FullName)
 
-        
-
         # The key will be the filename, the value will be the MD5 checksum for the file;
         #$dictionary.Add($_.FullName, $hash)
         
         # This might be simpler, but it will replace the key if it already exists;
         $dictionary[$_.FullName] = $LastWriteTime
-        }
       }
-    } 
+    }
+    #} 
   }
   # Returning the variable will allow us to use it outside of this function;
   return $dictionary
@@ -93,6 +96,8 @@ function Get-Checksums($path, $dictionary) {
   return $dictionary
 }
 #>
+
+#Get-Timestamps E:\julia.txt ([ref]$dictionary1)
 
 # Create your first dictionary, for the source drive, that will store your 
 # checksum values for the first drive;
