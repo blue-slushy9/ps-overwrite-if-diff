@@ -39,7 +39,7 @@ function Get-Timestamps($path, $dictionary) {
       #if (!($_.FullName -match '*\\.*')) {
 
       # ...and if the name of the directory does not contain "\." ...
-      # (for some reason, this returns the directories in E:\ that DO NOT contain a "\.");
+      # (for some reason, -like returns the directories in E:\ that DO NOT contain a "\.");
       if ($_.FullName -like '*\.*') {
 
         # DEBUG
@@ -48,10 +48,12 @@ function Get-Timestamps($path, $dictionary) {
         # ...recursively call the function on the subdirectory;
         Get-Timestamps $_.FullName
       }  
+    # Else (if it's NOT a directory)...
     } else {
+      # DEBUG
       write-output $_.FullName
-      # Else, if it's NOT a directory...
       #if (!($_.PSIsContainer)) {
+      # DEBUG
       Write-Output "test2"
           #if ($($_.FullName[]))
           # The key will be the full filepath of the file;
@@ -66,11 +68,12 @@ function Get-Timestamps($path, $dictionary) {
         # The key will be the filename, the value will be the MD5 checksum for the file;
         #$dictionary.Add($_.FullName, $hash)
         
-      # This might be simpler, but it will replace the key if it already exists;
+      # Create dictionary entry with key of FullName and value of LastWriteTime;  
+      # (This will replace the key if it already exists);
       $dictionary[$_.FullName] = $LastWriteTime
     }
   }
-  # Returning the variable will allow us to use it outside of this function;
+  # Returning the dictionary will allow us to use it outside of this function;
   return $dictionary
 }
 
@@ -119,7 +122,7 @@ function Get-Checksums($path, $dictionary) {
 
 # CREATE A LOOP TO CALL THE FUNCTION ON ALL SUBDIRECTORIES AND FILES?;
 
-# Call the function that retrieves the last write time, enter the letter of your first drive; 
+# Call our function that retrieves the last write time, enter the letter of your first drive; 
 Get-Timestamps "E:\" ([ref]$dictionary1)
 
 # Using GetEnumerator();
