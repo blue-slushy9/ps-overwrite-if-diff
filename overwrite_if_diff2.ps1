@@ -12,12 +12,18 @@ $dictionary1 = [Ordered]@{}
 # VIEW LAST WRITE TIME OF FILE;
 #Get-Item <filepath> | Select-Object LastWriteTime
 
+# This function will be called on every file in the source and destination drives,
+# it takes a filepath as its argument; 
 function Get-LastWriteTime($file) {
+  # Then it picks out the LastWriteTime of the file;
   $lastWriteTime = Get-Item $file | Select-Object LastWriteTime
   Return $lastWriteTime
 }
 
+# This function will fill out our dictionary with full filepaths as keys
+# and LastWriteTime's as values;
 function Get-Timestamps($path, $dictionary) {
+  # We need this line because we will be sorting through many directories;
   Get-ChildItem $path -Recurse | ForEach-Object {
     # If it's a directory...
     if ($_.PSIsContainer) {  
@@ -26,7 +32,9 @@ function Get-Timestamps($path, $dictionary) {
 
       # ...and if the name of the directory does not contain "\." ...
       # (for some reason, -like returns the directories in E:\ that DO NOT contain a "\.");
-      if ($_.FullName -like '*\.*') {
+      #if ($_.FullName -notlike '*\\\.*') {
+
+      if (!($_.FullName -contains '\\.')) {
 
         # DEBUG
         #Write-Output $_.FullName
@@ -66,12 +74,13 @@ function Get-Timestamps($path, $dictionary) {
 # Call our function that retrieves the last write time, enter the letter of your first drive; 
 Get-Timestamps "E:\" ([ref]$dictionary1)
 
-# Using GetEnumerator();
+# 
 $dictionary1.GetEnumerator() | ForEach-Object {
   Write-Output ("$($_.Key): $($_.Value)")
 }
 
-# CREATE A LOOP TO CALL THE FUNCTION ON ALL SUBDIRECTORIES AND FILES?;
+# CREATE A LOOP TO CALL THE FUNCTION ON ALL SUBDIRECTORIES AND FILES?
+# Not sure if that's necessary or if the Get-Timestamps function is already doing that;
 
 
 <# COMMENTED OUT BECAUSE I WILL BE USING LASTWRITETIME INSTEAD OF FILEHASHES;
