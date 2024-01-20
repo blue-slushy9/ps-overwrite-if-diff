@@ -23,20 +23,6 @@ function Get-Timestamps($path, $dictionary) {
     if ($_.PSIsContainer) {  
       # DEBUG
       #Write-Output $_.FullName
-      
-      #if ($($_.FullName[3]) -ne ".") { # ...and if the name of the directory does not begin with a "." ...
-      
-      # ...and if the name of the directory does not contain "\." ...
-      #if (!($_.FullName -contains "\.")) {
-      
-      # ...and if the name of the directory does not contain "\." ...
-      #if (!($_.FullName -contains "\\") -and !($_.FullName -contains "\.")) {
-
-      # ...and if the name of the directory does not contain "\." ...
-      # (-match uses regex, first '\' is escape character)
-      #if (!($_.FullName -match '\\.')) {
-
-      #if (!($_.FullName -match '*\\.*')) {
 
       # ...and if the name of the directory does not contain "\." ...
       # (for some reason, -like returns the directories in E:\ that DO NOT contain a "\.");
@@ -76,6 +62,17 @@ function Get-Timestamps($path, $dictionary) {
   # Returning the dictionary will allow us to use it outside of this function;
   return $dictionary
 }
+
+# Call our function that retrieves the last write time, enter the letter of your first drive; 
+Get-Timestamps "E:\" ([ref]$dictionary1)
+
+# Using GetEnumerator();
+$dictionary1.GetEnumerator() | ForEach-Object {
+  Write-Output ("$($_.Key): $($_.Value)")
+}
+
+# CREATE A LOOP TO CALL THE FUNCTION ON ALL SUBDIRECTORIES AND FILES?;
+
 
 <# COMMENTED OUT BECAUSE I WILL BE USING LASTWRITETIME INSTEAD OF FILEHASHES;
 function Get-Checksums($path, $dictionary) {
@@ -120,12 +117,17 @@ function Get-Checksums($path, $dictionary) {
 # checksum values for the first drive;
 #$dictionary1 = [Ordered]@{}
 
-# CREATE A LOOP TO CALL THE FUNCTION ON ALL SUBDIRECTORIES AND FILES?;
 
-# Call our function that retrieves the last write time, enter the letter of your first drive; 
-Get-Timestamps "E:\" ([ref]$dictionary1)
+#if ($($_.FullName[3]) -ne ".") { # ...and if the name of the directory does not begin with a "." ...
+      
+      # ...and if the name of the directory does not contain "\." ...
+      #if (!($_.FullName -contains "\.")) {
+      
+      # ...and if the name of the directory does not contain "\." ...
+      #if (!($_.FullName -contains "\\") -and !($_.FullName -contains "\.")) {
 
-# Using GetEnumerator();
-$dictionary1.GetEnumerator() | ForEach-Object {
-  Write-Output ("$($_.Key): $($_.Value)")
-}
+      # ...and if the name of the directory does not contain "\." ...
+      # (-match uses regex, first '\' is escape character)
+      #if (!($_.FullName -match '\\.')) {
+
+      #if (!($_.FullName -match '*\\.*')) {
