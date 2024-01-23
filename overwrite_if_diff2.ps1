@@ -3,7 +3,7 @@
 
 # Create your first dictionary, for the source drive, that will store your 
 # checksum values for the first drive;
-$dictionary1 = [Ordered]@{}
+#$dictionary1 = [Ordered]@{}
 <#$dictionary1["key0"] = "test"
 foreach ($entry in $dictionary1.GetEnumerator()) {
   Write-Output ("{0}: {1}" -f $entry.Key, $entry.Value)
@@ -46,7 +46,12 @@ function Get-Timestamps {
 
 # This function will fill out our dictionary with full filepaths as keys
 # and LastWriteTime's as values;
-function Get-Timestamps($path, $dictionary) {
+function Get-Timestamps([string]$path, [ref]$dictionary) {
+  <# Check if $dictionary is null and initialize it if needed;
+  if ($null -eq $dictionary.Value) {
+    $dictionary.Value = [Ordered]@{}
+  }#>
+  Write-Output "$dictionary1"
   # We need this line because we will be sorting through many directories;
   Get-ChildItem $path -Recurse | ForEach-Object {
     # If it's a directory...
@@ -83,8 +88,10 @@ function Get-Timestamps($path, $dictionary) {
       # Call the Get-LastWriteTime function and assign output to variable;
       $LastWriteTime = Get-LastWriteTime($_.FullName)
 
-        # The key will be the filename, the value will be the MD5 checksum for the file;
-        #$dictionary.Add($_.FullName, $hash)
+      if ($null -eq $dictionary.Value) {
+        $dictionary.Value = [Ordered]@{}
+      }
+      Write-Output "$dictionary1"
         
       # Create dictionary entry with key of FullName and value of LastWriteTime;  
       # (This will replace the key if it already exists);
@@ -95,6 +102,8 @@ function Get-Timestamps($path, $dictionary) {
   return $dictionary
 }
 
+# Initialize our first dictionary, corresponding to the source;
+#$dictionary1 = [Ordered]@{}
 # Call our function that retrieves the last write time, enter the letter of your first drive; 
 Get-Timestamps "C:\Users\rodri cruz\D" ([ref]$dictionary1) > "./test.txt"
 
