@@ -4,6 +4,10 @@
 # Create your first dictionary, for the source drive, that will store your 
 # checksum values for the first drive;
 $dictionary1 = [Ordered]@{}
+<#$dictionary1["key0"] = "test"
+foreach ($entry in $dictionary1.GetEnumerator()) {
+  Write-Output ("{0}: {1}" -f $entry.Key, $entry.Value)
+}#>
 
 # Create your second dictionary, for the destination drive, that will store
 # your checksum values for your second drive;
@@ -19,6 +23,26 @@ function Get-LastWriteTime($file) {
   $lastWriteTime = Get-Item $file | Select-Object LastWriteTime
   Return $lastWriteTime
 }
+
+<#
+# ChatGPT suggestion;
+function Get-Timestamps {
+  param (
+      [string]$directory,
+      [ref]$dictionary
+  )
+
+  # Some code here...
+
+  # Initialize the dictionary if needed
+  if ($null -eq $dictionary.Value) {
+      $dictionary.Value = [Ordered]@{}
+  }
+
+  # Rest of the code to populate the dictionary with timestamps
+  # ...
+}
+#>
 
 # This function will fill out our dictionary with full filepaths as keys
 # and LastWriteTime's as values;
@@ -72,7 +96,7 @@ function Get-Timestamps($path, $dictionary) {
 }
 
 # Call our function that retrieves the last write time, enter the letter of your first drive; 
-Get-Timestamps "E:\" ([ref]$dictionary1)
+Get-Timestamps "C:\Users\rodri cruz\D" ([ref]$dictionary1) > "./test.txt"
 
 # 
 $dictionary1.GetEnumerator() | ForEach-Object {
